@@ -1,21 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JS Chatbot</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css"
+    integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 </head>
+
 <body>
   <div class="chat-container">
+
+    <!-- Chat header -->
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <div class="chatbot-icon"><img src="img/chatbot.png" width="30px" height="30px" alt=""></div>
+        <span>Chatbot</span>
+      </div>
+      <div class="header-arrow"><i class="fa-solid fa-chevron-down"></i></div>
+    </div>
+
+    <!-- Chat messages -->
     <div id="chat-box" class="chat-box"></div>
 
+    <!-- Input area -->
     <div class="input-area">
       <input type="text" id="user-input" placeholder="Type a message..." />
       <button id="send-btn">Send</button>
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
+
+  </script>
 </body>
+
 </html>
