@@ -81,9 +81,17 @@ async function sendMessage() {
     if (message === "") return;
     appendMessage("user", message);
     userInput.value = "";
+    // Show placeholder while waiting
+    appendMessage("bot", "Typing...");
 
+    // Get bot reply
     const reply = await botReply(message);
-    appendMessage("bot", reply);
+    // Replace "Typing..." with actual reply
+    const lastBotMessage = chatBox.querySelector(".message.bot:last-child");
+    if (lastBotMessage) {
+        lastBotMessage.textContent = reply;
+    }
+
 }
 
 function appendMessage(sender, text) {
