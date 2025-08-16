@@ -6,7 +6,7 @@ const userInput = document.getElementById("user-input");
 const sendBtn = document.getElementById("send-btn");
 
 // Initialize AI client
-const genAI = new GoogleGenerativeAI("AIzaSyDUDhSWQqcN8u6t0tE7VRu4SDaklCKJlj0"); // put your API key here
+const genAI = new GoogleGenerativeAI("process.env.OPENAI_API_KEY"); // put your API key here
 
 sendBtn.addEventListener("click", sendMessage);
 
