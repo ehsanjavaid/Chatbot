@@ -1,66 +1,4 @@
-// const chatBox = document.getElementById("chat-box")
-// const userInput = document.getElementById("user-input")
-// const sendBtn = document.getElementById("send-btn")
 
-// sendBtn.addEventListener("click", sendMessage)
-
-// userInput.addEventListener("keypress", (e) => {
-//     if (e.key === "Enter") sendMessage();
-// });
-
-// function sendMessage() {
-//     const message = userInput.value.trim();
-//     if (message === "") return;
-//     appendMessage("user", message);
-//     userInput.value = "";
-
-//     setTimeout(() => {
-//         const reply = botReply(message);
-//         appendMessage("bot", reply)
-//     }, 500)
-// }
-
-// function appendMessage(sender, text) {
-//     const msg = document.createElement("div")
-//     msg.classList.add("message", sender);
-//     msg.textContent = text
-//     chatBox.appendChild(msg)
-//     chatBox.scrollTop = chatBox.scrollHeight
-// }
-// import { GoogleGenAI } from "@google/genai";
-
-// const ai = new GoogleGenAI({});
-
-// async function botReply() {
-//     const response = await ai.models.generateContent({
-//         model: "gemini-2.5-flash",
-//         contents: "Explain how AI works in a few words",
-//         config: {
-//             thinkingConfig: {
-//                 thinkingBudget: 0, // Disables thinking
-//             },
-//         }
-//     });
-//     console.log(response.text);
-// }
-
-// await botReply();
-
-// function botReply(msg) {
-//     msg = msg.toLowerCase();
-//     if (msg.includes('hello') || msg.includes('hi')) {
-//         return "Hello How can I help you?";
-//     }
-//     else if (msg.includes('How are you')) {
-//         return "I'm just a bot, but I'm doing great! 😄"
-//     }
-//     else if(msg.includes('by')){
-//         return "Goodby!"
-//     }
-//     else {
-//         return "I don't understand, can you rephrase?"
-//     }
-// }
 import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
 const chatBox = document.getElementById("chat-box");
@@ -81,15 +19,17 @@ async function sendMessage() {
     if (message === "") return;
     appendMessage("user", message);
     userInput.value = "";
-    // Show placeholder while waiting
-    appendMessage("bot", "Typing...");
+    // / Show typing dots
+    const typingEl = appendTyping();
 
-    // Get bot reply
-    const reply = await botReply(message);
-    // Replace "Typing..." with actual reply
-    const lastBotMessage = chatBox.querySelector(".message.bot:last-child");
-    if (lastBotMessage) {
-        lastBotMessage.textContent = reply;
+    try {
+        const reply = await botReply(message);
+        typingEl.remove(); // remove dots
+        appendMessage("bot", reply);
+    } catch (error) {
+        typingEl.remove();
+        appendMessage("bot", "⚠️ Oops! Something went wrong. Please try again.");
+        console.error(error);
     }
 
 }
@@ -97,15 +37,38 @@ async function sendMessage() {
 function appendMessage(sender, text) {
     const msg = document.createElement("div");
     msg.classList.add("message", sender);
-    msg.textContent = text;
+
+    // Use markdown parsing for bot messages
+    if (sender === "bot") {
+        msg.innerHTML = marked.parse(text);
+    } else {
+        msg.textContent = text; // keep user messages plain
+    }
+
     chatBox.appendChild(msg);
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
+
+function appendTyping() {
+    const typing = document.createElement("div");
+    typing.classList.add("message", "bot");
+
+    const dots = document.createElement("div");
+    dots.classList.add("typing-dots");
+    dots.innerHTML = "<span></span><span></span><span></span>";
+
+    typing.appendChild(dots);
+    chatBox.appendChild(typing);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    return typing;
+}
 async function botReply(userMessage) {
     try {
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-        const result = await model.generateContent(userMessage);
+        const result = await model.generateContent(
+            `Reply in clean Markdown format. Use short paragraphs, bullet points, and bold text when helpful.\n\nUser: ${userMessage}`
+        );
         const response = await result.response;
         return response.text() || "Sorry, I couldn't generate a reply.";
     } catch (error) {
